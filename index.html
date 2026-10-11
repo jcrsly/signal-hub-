@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MERCAURUM Signal Hub</title>
+<style>
+:root{--bg:#F7F3E8;--panel:#FFFFFF;--ink:#1A1810;--mut:#6B6450;--gold:#8A6A12;--line:#DDD3B0;--acc:#C9A24B;--accT:#14110A;--good:#1F7A3A;--bad:#B3261E;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E0D0A;--panel:#1A1812;--ink:#F3EEDD;--mut:#A39A7E;--gold:#C9A24B;--line:#3A3420;--good:#58C17A;--bad:#F0776F}}
+:root[data-theme="dark"]{--bg:#0E0D0A;--panel:#1A1812;--ink:#F3EEDD;--mut:#A39A7E;--gold:#C9A24B;--line:#3A3420;--good:#58C17A;--bad:#F0776F}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.in{max-width:560px;margin:0 auto;padding:0 14px}
+.brand{font:700 23px Georgia,"Times New Roman",serif;color:var(--gold);letter-spacing:.05em;padding-top:12px}
+.brand small{font:400 12px -apple-system,"Segoe UI",sans-serif;color:var(--mut);letter-spacing:0;margin-left:8px}
+nav{display:flex;margin-top:6px}
+nav button{flex:1;padding:11px 4px;border:0;border-bottom:3px solid transparent;background:none;color:var(--mut);font:inherit;font-weight:600;cursor:pointer}
+nav button.on{color:var(--ink);border-color:var(--acc)}
+main{padding-bottom:50px}
+section{display:none;padding-top:14px}section.on{display:block}
+h2{font:700 18px Georgia,serif;margin:18px 0 8px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:13px;color:var(--mut)}
+input,select{width:100%;margin-top:3px;padding:10px;font:inherit;font-size:16px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.full{grid-column:1/-1}
+pre{margin:10px 0;padding:12px;white-space:pre-wrap;word-wrap:break-word;font:14px/1.5 -apple-system,"Segoe UI",sans-serif;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+.btn{padding:12px 16px;border:0;border-radius:8px;background:var(--acc);color:var(--accT);font:inherit;font-weight:700;cursor:pointer}
+.ghost{padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:none;color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
+.warn{color:var(--bad);font-size:13px;min-height:18px;margin-top:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.card h3{margin:0;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card pre{border:0;padding:6px 0 0;margin:6px 0 0;background:none}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+.chips button{flex:none;padding:8px 13px;border-radius:20px;border:1px solid var(--line);background:none;color:var(--ink);font:inherit;cursor:pointer}
+.chips button.on{background:var(--acc);color:var(--accT);border-color:var(--acc);font-weight:700}
+.tag{font-size:11px;background:var(--acc);color:var(--accT);padding:2px 7px;border-radius:10px;margin-left:6px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font:700 20px Georgia,serif}.stat span{font-size:12px;color:var(--mut)}
+.tr{display:grid;grid-template-columns:1fr 78px auto;gap:8px;align-items:center}
+.tr input{margin:0;padding:8px}
+.win{color:var(--good)}.loss{color:var(--bad)}.be{color:var(--mut)}
+.x{border:0;background:none;color:var(--mut);font-size:20px;cursor:pointer;padding:2px 8px}
+.muted{color:var(--mut);font-size:13px}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:20px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style></head>
+<body>
+<header><div class="in"><div class="brand">MERCAURUM<small>Signal Hub</small></div>
+<nav><button class="on" data-t="signal">Signal</button><button data-t="msgs">Messages</button><button data-t="track">Tracker</button></nav></div></header>
+<main class="in">
+
+<section id="signal" class="on">
+<div class="g">
+<label>Pair<input id="pair" list="pairs" value="XAUUSD"><datalist id="pairs"><option>XAUUSD</option><option>GBPUSD</option><option>EURUSD</option><option>USDJPY</option><option>NAS100</option><option>US30</option></datalist></label>
+<label>Signal number<input id="num" inputmode="numeric"></label>
+<label>Direction<select id="dir"><option>SELL</option><option>BUY</option></select></label>
+<label>Order<select id="ord"><option>NOW</option><option>LIMIT</option></select></label>
+<label>Entry<input id="e" inputmode="decimal" placeholder="3350.00"></label>
+<label>Stop loss<input id="sl" inputmode="decimal" placeholder="3356.00"></label>
+<label>TP1<input id="t1" inputmode="decimal" placeholder="3344.00"></label>
+<label>TP2<input id="t2" inputmode="decimal" placeholder="3338.00"></label>
+<label>TP3<input id="t3" inputmode="decimal" placeholder="3332.00"></label>
+<label>Risk %<input id="risk" inputmode="decimal" value="1"></label>
+<label class="full">Reason (one line)<input id="why" placeholder="London high swept, rejection from 4H supply"></label>
+</div>
+<div class="warn" id="warn"></div>
+<pre id="pv"></pre>
+<div class="row"><button class="btn" id="cp">Copy signal</button><button class="ghost" id="sv">Save to tracker</button></div>
+<h2>Trade updates</h2>
+<p class="muted">Uses the signal number above. Tap to copy, then reply to your signal.</p>
+<div class="row" id="ups" style="gap:8px"></div>
+</section>
+
+<section id="msgs">
+<div class="chips" id="chips"></div>
+<div id="mlist"></div>
+</section>
+
+<section id="track">
+<div class="stats" id="stats"></div>
+<h2>Logged signals</h2>
+<div id="tlist"></div>
+<div class="row" style="margin-top:12px"><button class="btn" id="rc">Copy weekly recap</button></div>
+<p class="muted">Enter each result in R: +3 for a full TP3 win, 0 for break-even, -1 for a stop-out. Win rate counts wins out of closed signals. Your log is stored in this browser on this device only.</p>
+</section>
+
+<p class="muted" style="margin-top:24px">Educational only. Trading carries a high risk of loss. Never promise or imply guaranteed results.</p>
+</main>
+<div id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s), DISC="⚠️ Educational only. Trading is high risk. Manage your own risk.";
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let log=store.get('mq_log',[]), last=store.get('mq_n',0);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pad=n=>String(n).padStart(3,'0');
+function toast(t){const x=$('#toast');x.textContent=t;x.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>x.classList.remove('on'),1400)}
+function fb(t){const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('Copied')}catch(e){toast('Press and hold to copy')}a.remove()}
+function copy(t){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>toast('Copied'),()=>fb(t))}else fb(t)}
+
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,section').forEach(x=>x.classList.remove('on'));b.classList.add('on');$('#'+b.dataset.t).classList.add('on');scrollTo(0,0)});
+
+/* ---------- Signal builder ---------- */
+const v=id=>$('#'+id).value.trim(), f=x=>isNaN(parseFloat(x))?x:parseFloat(x).toFixed(2);
+function calc(){const e=parseFloat(v('e')),sl=parseFloat(v('sl')),d=v('dir'),tp=['t1','t2','t3'].map(i=>parseFloat(v(i))),r={rr:null,w:''};
+ if(isNaN(e)||isNaN(sl))return r;
+ const sell=d==='SELL';
+ if(sell?sl<=e:sl>=e)r.w=`For a ${d}, the stop loss must be ${sell?'above':'below'} entry.`;
+ else if(tp.some(t=>!isNaN(t)&&(sell?t>=e:t<=e)))r.w=`For a ${d}, every TP must be ${sell?'below':'above'} entry.`;
+ const best=[...tp].reverse().find(t=>!isNaN(t)),risk=Math.abs(e-sl);
+ if(best!==undefined&&risk>0&&!r.w)r.rr=Math.round(Math.abs(best-e)/risk*10)/10;
+ return r}
+function num(){return v('num')||pad(last+1)}
+function signalText(){const c=calc();let t=`🟡 MERCAURUM SIGNAL #${num()}\n\n📊 ${v('pair')||'XAUUSD'} | ${v('dir')} ${v('ord')}\n📍 Entry: ${f(v('e'))||'[0000.00]'}\n🛑 SL: ${f(v('sl'))||'[0000.00]'}`;
+ ['t1','t2','t3'].forEach((id,i)=>{if(v(id))t+=`\n🎯 TP${i+1}: ${f(v(id))}`});
+ t+=`\n⚖️ Risk: ${v('risk')||1}%`+(c.rr?` | Max R:R 1:${c.rr}`:'');
+ if(v('why'))t+=`\n\n📝 Reason: ${v('why')}`;
+ if(v('t1')&&v('t2')&&v('t3'))t+=`\n\n📌 Plan: TP1 secure partials and move SL to BE. TP2 take more profit. TP3 let it run.`;
+ return t+`\n\n${DISC}`}
+function draw(){$('#pv').textContent=signalText();$('#warn').textContent=calc().w;$('#num').placeholder=pad(last+1)}
+document.querySelectorAll('#signal input,#signal select').forEach(i=>i.oninput=draw);
+$('#cp').onclick=()=>copy(signalText());
+$('#sv').onclick=()=>{const n=num();log.unshift({id:Date.now(),d:new Date().toISOString(),n,pair:v('pair')||'XAUUSD',dir:v('dir'),e:v('e'),sl:v('sl'),r:null});
+ last=parseInt(n)||last+1;store.set('mq_log',log);store.set('mq_n',last);$('#num').value='';draw();renderTrack();toast('Saved to tracker')};
+const UPS=[['Running','📍 SIGNAL #N UPDATE\nPrice moving our way. Trade running, stay patient.'],['TP1 hit','✅ SIGNAL #N UPDATE\nTP1 hit. Secure partials and move SL to BE.'],['TP2 hit','✅✅ SIGNAL #N UPDATE\nTP2 hit. Take more profit. Let the rest run to TP3.'],['TP3 hit','🏆 SIGNAL #N CLOSED\nTP3 hit. Full target reached.\nResult: [+3R]\nLesson: [one line]'],['Break-even','🔒 SIGNAL #N UPDATE\nPrice stalling. Closing at entry / BE.'],['Stopped out','🛑 SIGNAL #N CLOSED\nSL hit. Result: -1R.\nLosses are part of the process. We stick to the plan and wait for the next clean setup.'],['Cancelled','❌ SIGNAL #N CANCELLED\nSetup no longer valid. Do not enter if you haven\'t already.']];
+UPS.forEach(([l,t])=>{const b=document.createElement('button');b.className='ghost';b.textContent=l;b.onclick=()=>copy(t.replace(/#N/g,'#'+(v('num')||pad(last||1))));$('#ups').appendChild(b)});
+
+/* ---------- Messages ---------- */
+const M=[
+['Mornings','Monday',`☀️ Good morning VIP team. 🟡\nNew week, clean slate. Here's the plan:\nWeekly bias: [bullish/bearish/neutral] on [XAUUSD]\nKey levels: [support] / [resistance]\nRed-folder news: [events + days]\nSignals will come through here in the usual layout. Be patient, and let price come to us.`],
+['Mornings','Tuesday',`☀️ Morning VIP.\nYesterday: [one-line recap]\nToday I'm watching [pair] at the London open.\nReminder: no setup means no trade. Protecting capital comes first.`],
+['Mornings','Wednesday',`☀️ Good morning team. Midweek check.\nBe honest with yourself: are you following your rules or chasing trades?\nLevels today: [support] / [resistance]\nNews to watch: [event + time UK]`],
+['Mornings','Thursday',`☀️ Morning VIPs.\nBig news day: [event + time UK]. Spreads can widen, so reduce your size or wait for the reaction.\nStay calm and only take what the plan gives us.`],
+['Mornings','Friday',`☀️ Happy Friday, VIP.\nLook for clean setups only and don't force trades late in the week.\nWeekly recap and results coming this evening. Thank you for the discipline this week. 🔥`],
+['Mornings','Extra: focus',`☀️ Good morning MERCAURUM\nToday's focus: [XAUUSD / GBPUSD]\nKey levels: [support] / [resistance]\nNews to watch: [event + time UK]\nI'll be live at London open. Stay disciplined. 🎯`],
+['Mornings','Extra: patience',`☀️ Morning team\nPlan: wait for London to sweep liquidity, then look for the setup. No entry, no trade.\nProtect capital first, profit second.`],
+['Midday','Midday check-in',`📍 MIDDAY CHECK-IN\n[Pair] is [ranging / trending]. London session: [one-line summary].\nOpen signals: [#012 running / none]\nNext focus: New York open at [time].`],
+['Midday','Midday reminder',`🧠 MIDDAY REMINDER\nTrade the plan, not the P&L. Skipping a bad setup is a win.`],
+['Midday','End of day recap',`🌙 DAILY RECAP\nSignals: [#012 +3R, #013 BE]\nNet: [+3R]\nBest lesson: [one line]\nSee you tomorrow. 🔥`],
+['Weekend','Sat: VIP weekly recap',`📊 VIP WEEKLY RECAP 🟡\nSignals taken: [#]\nWins: [#] | BE: [#] | Losses: [#]\nNet: [+/- R]\nBest trade: [Signal # and one line on why it worked]\nBiggest lesson: [one line]\nThank you all for the discipline this week. Rest up. 🙏`],
+['Weekend','Sat: VIP reminder',`🧠 Weekend reminder, VIP team.\nThe market is closed, so this is the time to review your journal. Mark one thing you did well and one habit to fix next week.\nPost it here if you want feedback.`],
+['Weekend','Sat: switch-off post',`Weekend mode. 🌴\nSwitch off the charts, reset and spend time with the people who matter. The best traders know when to step away.\nWe go again Monday.`],
+['Weekend','Sat: free channel mindset',`🧠 WEEKEND MINDSET\nThe market is closed. This is where you work on you.\n✔ Review your journal\n✔ Mark your wins and mistakes\n✔ Cut one bad habit this week\nConsistency is built when nobody's watching.`],
+['Weekend','Sat: lifestyle post',`Weekend mode. 🌴\nTrading gave me the freedom to choose how I spend my time, but it took years of discipline, losses and learning first.\nRest up. Monday we go again.`],
+['Weekend','Sun: Monday prep',`📅 MONDAY PREP | VIP 🟡\nPairs I'm watching: [XAUUSD / GBPUSD]\nWeekly bias: [bullish / bearish / neutral]\nKey levels: [support] / [resistance]\nRed-folder news: [event + day + time UK]\nNo rush. We wait for the setup and let price come to us.`],
+['Weekend','Sun: homework',`📚 SUNDAY HOMEWORK\nOpen your chart and mark:\n1. Weekly high and low\n2. Daily support and resistance\n3. One setup you missed and why\nDrop your chart here and I'll give feedback. 👇`],
+['Weekend','Sun: evening check-in',`🎯 Evening check-in, VIP team.\nOne question before the week starts: what's your one goal for next week? Mine is to follow the plan on every trade.\nReply below. Let's hold each other accountable.`],
+['Weekend','Sun: free channel call-to-action',`Want to learn how I trade gold and Forex?\nJoin the Education group and start with the risk-management folder.\n👉 [link]\n\n⚠️ Educational purposes only. Trading carries a high risk of loss.`],
+['VIP','Welcome: day 1',`Welcome to MERCAURUM VIP, [name]. 🟡\nHere's how this works: daily analysis before London open, signals in a fixed layout, and updates on every trade. Start by reading the pinned message and the risk-management folder in Education.\nAny questions, message me here. I'm glad you're with us.`],
+['VIP','Check-in: day 7',`Hey [name], one week in. How's it going so far?\nTell me one thing that's been useful and one thing you'd like more of. I read every reply and it shapes what I put out.\nRemember, focus on following the plan, not on any single trade.`],
+['VIP','Check-in: day 30',`[name], that's your first month in the VIP. 🔥\nTake 5 minutes to review your journal: what did you do well, and what's one habit to fix next month?\nPost it in Education if you want feedback, and tell me what you want to see more of.`],
+['VIP','Weekly check-in',`Quick one for the VIP team: what's one thing you struggled with this week, and what would help you most? Reply here or message me directly. I read everything.`],
+['VIP','Review call announcement',`📞 VIP review call this [day] at [time UK].\nBring a chart or a trade from your journal and we'll go through it together. Questions welcome.`],
+['VIP','Discipline shout-out',`Shoutout to everyone who stuck to the plan this week, whether it was a win, BE or a small loss. Following your rules is what builds consistency. 👏`],
+['VIP','Losing streak',`Quick update, VIP team. We've had a few losses in a row. That's normal and it's part of trading.\nCut your size, stick to the plan and don't chase. Protecting capital is the priority until the market gives us clean setups again.`]];
+const cats=[...new Set(M.map(m=>m[0]))],today=new Date().toLocaleDateString('en-GB',{weekday:'long'});
+let cat=['Saturday','Sunday'].includes(today)?'Weekend':'Mornings';
+function renderMsgs(){
+ $('#chips').innerHTML=cats.map(c=>`<button class="${c===cat?'on':''}" data-c="${c}">${c}</button>`).join('');
+ $('#chips').querySelectorAll('button').forEach(b=>b.onclick=()=>{cat=b.dataset.c;renderMsgs()});
+ $('#mlist').innerHTML='';
+ M.filter(m=>m[0]===cat).forEach(([,l,t])=>{const d=document.createElement('div');d.className='card';
+  d.innerHTML=`<h3><span>${esc(l)}${l===today?'<span class="tag">Today</span>':''}</span><button class="ghost">Copy</button></h3><pre></pre>`;
+  d.querySelector('pre').textContent=t;d.querySelector('button').onclick=()=>copy(t);$('#mlist').appendChild(d)})}
+
+/* ---------- Tracker ---------- */
+function outcome(r){return r===null||r===''?'':r>0?'Win':r===0?'BE':'Loss'}
+function renderTrack(){
+ const cl=log.filter(x=>x.r!==null),w=cl.filter(x=>x.r>0).length,b=cl.filter(x=>x.r===0).length,l=cl.filter(x=>x.r<0).length,net=cl.reduce((s,x)=>s+x.r,0);
+ const S=[['Closed',cl.length],['Win rate',cl.length?Math.round(w/cl.length*100)+'%':'-'],['Net R',(net>0?'+':'')+net],['Wins',w],['Break-evens',b],['Losses',l]];
+ $('#stats').innerHTML=S.map(([k,x])=>`<div class="stat"><b>${x}</b><span>${k}</span></div>`).join('');
+ $('#tlist').innerHTML=log.length?'':'<p class="muted">No signals yet. Build one on the Signal tab and tap Save to tracker.</p>';
+ log.forEach(x=>{const o=outcome(x.r),d=document.createElement('div');d.className='card tr';
+  d.innerHTML=`<div><b>#${esc(x.n)} ${esc(x.pair)} ${x.dir}</b><div class="muted">${new Date(x.d).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}${x.e?' · entry '+esc(x.e):''} <span class="${o==='Win'?'win':o==='Loss'?'loss':'be'}">${o}</span></div></div><input type="number" step="0.5" inputmode="decimal" placeholder="R" aria-label="Result in R" value="${x.r===null?'':x.r}"><button class="x" aria-label="Delete">×</button>`;
+  d.querySelector('input').onchange=e=>{x.r=e.target.value===''?null:parseFloat(e.target.value);store.set('mq_log',log);renderTrack()};
+  d.querySelector('.x').onclick=()=>{if(confirm('Delete this signal?')){log=log.filter(y=>y!==x);store.set('mq_log',log);renderTrack()}};
+  $('#tlist').appendChild(d)})}
+$('#rc').onclick=()=>{const wk=log.filter(x=>x.r!==null&&Date.now()-new Date(x.d)<6048e5),w=wk.filter(x=>x.r>0).length,b=wk.filter(x=>x.r===0).length,l=wk.filter(x=>x.r<0).length,net=wk.reduce((s,x)=>s+x.r,0);
+ if(!wk.length){toast('No closed signals this week');return}
+ copy(`📊 WEEKLY RECAP | MERCAURUM\nSignals taken: ${wk.length}\nWins: ${w} | BE: ${b} | Losses: ${l}\nNet: ${net>0?'+':''}${net}R\nBiggest lesson: [one line]\n\n${DISC}`)};
+
+draw();renderMsgs();renderTrack();
+</script>
+</body></html>
